@@ -1,6 +1,40 @@
 @import "tailwindcss";
 
+@theme {
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --color-ink: #0a0a0a;
+  --color-surface: #131313;
+  --color-surface-raised: #1a1a1a;
+  --color-line: #2a2a2a;
+
+  /* lado Artista: rojo cálido */
+  --color-side-artist: #ef4444;
+  --color-side-artist-dim: #5c1d1d;
+
+  /* lado Beatmaker: azul acero frío, contrasta con el rojo del artista */
+  --color-side-prod: #5b8aa6;
+  --color-side-prod-dim: #243842;
+
+  /* papel, no blanco puro: menos fatiga visual sobre fondo negro */
+  --color-paper: #ece6d9;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background-color: #030712;
+  background-color: var(--color-ink);
   margin: 0;
+  font-family: var(--font-body);
+}
+
+/* textura sutil */
+.grain-bg {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.035) 1px, transparent 0);
+  background-size: 22px 22px;
 }

@@ -10,19 +10,19 @@ export default function Navbar() {
   ]
 
   return (
-    <nav className="bg-gray-900 border-b border-gray-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-      <Link to="/" className="text-purple-400 font-bold text-xl tracking-tight">
+    <nav className="bg-surface border-b border-line px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-50 gap-3">
+      <Link to="/" className="font-display font-extrabold text-base sm:text-xl tracking-tight text-side-artist whitespace-nowrap">
         ObrasDeSolitario
       </Link>
-      <div className="flex gap-6">
+      <div className="flex gap-4 sm:gap-6 overflow-x-auto">
         {links.map((link) => (
           <Link
             key={link.to}
             to={link.to}
-            className={`text-sm font-medium transition-colors ${
+            className={`text-xs sm:text-sm font-medium font-mono uppercase tracking-wide whitespace-nowrap transition-colors ${
               pathname === link.to
-                ? 'text-purple-400'
-                : 'text-gray-400 hover:text-white'
+                ? 'text-side-artist'
+                : 'text-gray-400 hover:text-paper'
             }`}
           >
             {link.label}

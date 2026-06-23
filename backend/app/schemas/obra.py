@@ -10,7 +10,7 @@ class ObraBase(BaseModel):
     completa: Optional[bool] = False
     eliminada: Optional[bool] = False
     autor_beat: Optional[str] = None
-    beat_original: Optional[str] = None
+    nombre_beat: Optional[str] = None
     fecha_beat: Optional[date] = None
     link_obra: Optional[str] = None
     link_beat: Optional[str] = None
@@ -20,12 +20,16 @@ class ObraBase(BaseModel):
     tiene_audio: Optional[bool] = False
     tiene_instrumental: Optional[bool] = False
     fuente_recuperacion: Optional[str] = None
+    letra: Optional[str] = None
+    link_canal_artista: Optional[str] = None
+    link_canal_beat: Optional[str] = None
+    descripcion_beat: Optional[str] = None
 
 class ObraCreate(ObraBase):
     pass
 
 class ObraUpdate(ObraBase):
-    nombre: Optional[str] = None  # todos opcionales al editar
+    nombre: Optional[str] = None
 
 class ObraOut(ObraBase):
     id: int
