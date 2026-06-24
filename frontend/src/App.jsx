@@ -7,6 +7,8 @@ import ObraDetalle from './pages/ObraDetalle'
 import Recuperacion from './pages/Recuperacion'
 import Login from './pages/Login'
 import Admin from './pages/Admin'
+import AdminArtistas from './pages/AdminArtistas'
+import AdminBeatmakers from './pages/AdminBeatmakers'
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
             <Route path="/recuperacion" element={<Recuperacion />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/artistas" element={<AdminArtistas />} />
+            <Route path="/admin/beatmakers" element={<AdminBeatmakers />} />
           </Routes>
         </main>
         <Footer />

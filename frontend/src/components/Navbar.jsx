@@ -43,28 +43,21 @@ export default function Navbar() {
 
         {isAdmin ? (
           <div className="flex items-center gap-3 border-l border-line pl-4 ml-1">
-            <Link
-              to="/admin"
-              className={`font-mono text-[11px] uppercase tracking-widest whitespace-nowrap transition-colors ${
-                pathname === '/admin'
-                  ? 'text-side-artist'
-                  : 'text-gray-500 hover:text-paper'
-              }`}
-            >
-              Admin
+            <Link to="/admin" className={`font-mono text-[11px] uppercase tracking-widest whitespace-nowrap transition-colors ${pathname === '/admin' ? 'text-side-artist' : 'text-gray-500 hover:text-paper'}`}>
+              Obras
             </Link>
-            <button
-              onClick={handleLogout}
-              className="font-mono text-[11px] uppercase tracking-widest text-gray-600 hover:text-side-artist transition-colors"
-            >
+            <Link to="/admin/artistas" className={`font-mono text-[11px] uppercase tracking-widest whitespace-nowrap transition-colors ${pathname === '/admin/artistas' ? 'text-side-artist' : 'text-gray-500 hover:text-paper'}`}>
+              Artistas
+            </Link>
+            <Link to="/admin/beatmakers" className={`font-mono text-[11px] uppercase tracking-widest whitespace-nowrap transition-colors ${pathname === '/admin/beatmakers' ? 'text-side-prod' : 'text-gray-500 hover:text-paper'}`}>
+              Beatmakers
+            </Link>
+            <button onClick={handleLogout} className="font-mono text-[11px] uppercase tracking-widest text-gray-600 hover:text-side-artist transition-colors">
               Salir
             </button>
           </div>
         ) : (
-          <Link
-            to="/login"
-            className="font-mono text-[11px] uppercase tracking-widest text-gray-600 hover:text-paper transition-colors border-l border-line pl-4 ml-1"
-          >
+          <Link to="/login" className="font-mono text-[11px] uppercase tracking-widest text-gray-600 hover:text-paper transition-colors border-l border-line pl-4 ml-1">
             Admin
           </Link>
         )}
