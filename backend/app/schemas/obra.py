@@ -21,6 +21,7 @@ class BeatmakerEmbed(BaseModel):
 class ObraBase(BaseModel):
     nombre: str
     feat: Optional[str] = None
+    feat_beat: Optional[str] = None
     artista_id: Optional[int] = None
     beatmaker_id: Optional[int] = None
 
@@ -73,8 +74,8 @@ class ObraBase(BaseModel):
     observacion: Optional[str] = None
 
     # Sincronización
-    segundo_inicio_obra: Optional[int] = 0
-    segundo_inicio_beat: Optional[int] = 0
+    segundo_inicio_obra: Optional[float] = 0.0
+    segundo_inicio_beat: Optional[float] = 0.0
 
 class ObraCreate(ObraBase):
     pass

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Date, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, Date, Text, DateTime, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
@@ -9,7 +9,8 @@ class Obra(Base):
     id                  = Column(Integer, primary_key=True, index=True)
     nombre              = Column(String(255), nullable=False)
     feat                = Column(String(255), nullable=True)
-
+    feat_beat = Column(String(255), nullable=True)
+    
     # Relaciones
     artista_id          = Column(Integer, ForeignKey("artistas.id"), nullable=True)
     beatmaker_id        = Column(Integer, ForeignKey("beatmakers.id"), nullable=True)
@@ -65,8 +66,8 @@ class Obra(Base):
     observacion         = Column(Text, nullable=True)
 
     # Sincronización
-    segundo_inicio_obra = Column(Integer, nullable=True, default=0)
-    segundo_inicio_beat = Column(Integer, nullable=True, default=0)
+    segundo_inicio_obra = Column(Float, nullable=True, default=0.0)
+    segundo_inicio_beat = Column(Float, nullable=True, default=0.0)
 
     created_at          = Column(DateTime, server_default=func.now())
     updated_at          = Column(DateTime, server_default=func.now(), onupdate=func.now())

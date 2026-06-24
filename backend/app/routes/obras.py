@@ -100,6 +100,8 @@ def obtener_obra(id: int, db: Session = Depends(get_db)):
 @router.post("/", response_model=ObraOut)
 def crear_obra(obra: ObraCreate, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
     nueva = Obra(**obra.model_dump())
+    nueva.tiene_audio = (nueva.audio_estado or 'no') != 'no'
+    nueva.tiene_instrumental = (nueva.instrumental_estado or 'no') != 'no'
     db.add(nueva)
     db.commit()
     db.refresh(nueva)
@@ -112,6 +114,10 @@ def editar_obra(id: int, datos: ObraUpdate, db: Session = Depends(get_db), curre
         raise HTTPException(status_code=404, detail="Obra no encontrada")
     for campo, valor in datos.model_dump(exclude_unset=True).items():
         setattr(obra, campo, valor)
+
+    obra.tiene_audio = (obra.audio_estado or 'no') != 'no'
+    obra.tiene_instrumental = (obra.instrumental_estado or 'no') != 'no'
+
     db.commit()
     db.refresh(obra)
     return obra
