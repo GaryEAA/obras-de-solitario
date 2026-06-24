@@ -77,10 +77,16 @@ export default function ObraDetalle() {
   const nombreBeatmaker = obra.beatmaker?.nombre || obra.autor_beat || 'Desconocido'
   const linkBeatmaker = obra.beatmaker?.canal_yt || obra.link_canal_beat
 
-  // Miniatura — propia o generada del youtube_id
-  const thumbnailObra = obra.miniatura_obra
+  const resolverUrl = (url) => {
+    if (!url) return null
+    if (url.startsWith('http')) return url
+    return `http://localhost:8000${url}`
+  }
+
+  const thumbnailObra = resolverUrl(obra.miniatura_obra)
     || (obra.youtube_id_obra ? `https://img.youtube.com/vi/${obra.youtube_id_obra}/hqdefault.jpg` : null)
-  const thumbnailBeat = obra.miniatura_beat
+
+  const thumbnailBeat = resolverUrl(obra.miniatura_beat)
     || (obra.youtube_id_beat ? `https://img.youtube.com/vi/${obra.youtube_id_beat}/hqdefault.jpg` : null)
 
   return (

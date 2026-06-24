@@ -346,6 +346,11 @@ export default function Admin() {
                     <Campo label="Link YouTube obra" value={obraEditando.link_obra} onChange={(v) => handleChange('link_obra', v)} />
                     <Campo label="YouTube ID obra" value={obraEditando.youtube_id_obra} onChange={(v) => handleChange('youtube_id_obra', v)} />
                     <Campo label="Miniatura obra (URL)" value={obraEditando.miniatura_obra} onChange={(v) => handleChange('miniatura_obra', v)} />
+                    <SubirImagen
+                      label="Miniatura obra (imagen propia)"
+                      urlActual={obraEditando.miniatura_obra}
+                      onSubida={(url) => handleChange('miniatura_obra', url)}
+                    />
                   </Seccion>
                 </>
               )}
@@ -376,6 +381,11 @@ export default function Admin() {
                     <Campo label="Link YouTube beat" value={obraEditando.link_beat} onChange={(v) => handleChange('link_beat', v)} />
                     <Campo label="YouTube ID beat" value={obraEditando.youtube_id_beat} onChange={(v) => handleChange('youtube_id_beat', v)} />
                     <Campo label="Miniatura beat (URL)" value={obraEditando.miniatura_beat} onChange={(v) => handleChange('miniatura_beat', v)} />
+                    <SubirImagen
+                      label="Miniatura beat (imagen propia)"
+                      urlActual={obraEditando.miniatura_beat}
+                      onSubida={(url) => handleChange('miniatura_beat', url)}
+                    />
                   </Seccion>
 
                   <Seccion titulo="Otros links del beat">
@@ -676,5 +686,59 @@ function EstadoBadge({ valor }) {
     <span className={`font-mono text-[10px] uppercase tracking-widest ${colores[valor] || 'text-gray-400'}`}>
       {valor}
     </span>
+  )
+}
+
+function SubirImagen({ label, urlActual, onSubida }) {
+  const [subiendo, setSubiendo] = useState(false)
+
+  const handleArchivo = async (e) => {
+    const archivo = e.target.files[0]
+    if (!archivo) return
+    setSubiendo(true)
+    try {
+      const { subirImagen } = await import('../api/obras')
+      const url = await subirImagen(archivo)
+      onSubida(url)
+    } catch {
+      alert('Error al subir imagen')
+    } finally {
+      setSubiendo(false)
+    }
+  }
+
+  return (
+    <div>
+      <label className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-1.5 block">
+        {label}
+      </label>
+      <div className="flex gap-3 items-start">
+        {urlActual && (
+          <img
+            src={`http://localhost:8000${urlActual}`}
+            alt="miniatura"
+            className="w-24 h-16 object-cover rounded-lg border border-line"
+          />
+        )}
+        <div className="flex flex-col gap-2">
+          <label className={`cursor-pointer font-mono text-[11px] uppercase tracking-widest px-4 py-2 rounded-lg border transition-colors ${
+            subiendo
+              ? 'border-line text-gray-600'
+              : 'border-side-artist/40 text-side-artist hover:bg-side-artist/10'
+          }`}>
+            {subiendo ? 'Subiendo...' : 'Subir imagen'}
+            <input type="file" accept="image/*" onChange={handleArchivo} className="hidden" />
+          </label>
+          {urlActual && (
+            <button
+              onClick={() => onSubida(null)}
+              className="font-mono text-[10px] uppercase tracking-widest text-gray-600 hover:text-side-artist transition-colors text-left"
+            >
+              Quitar
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }

@@ -24,3 +24,16 @@ export const editarArtista = (id, data) => api.put(`/artistas/${id}`, data)
 export const getBeatmakers = () => api.get('/beatmakers/')
 export const crearBeatmaker = (data) => api.post('/beatmakers/', data)
 export const editarBeatmaker = (id, data) => api.put(`/beatmakers/${id}`, data)
+
+export const subirImagen = async (archivo) => {
+  const formData = new FormData()
+  formData.append('archivo', archivo)
+  const token = localStorage.getItem('token')
+  const res = await fetch('http://localhost:8000/obras/upload', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  })
+  const data = await res.json()
+  return data.url
+}
