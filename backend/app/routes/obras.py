@@ -1,12 +1,45 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+import os
+import uuid
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from typing import Optional
 from app.database import get_db
 from app.models.obra import Obra
 from app.schemas.obra import ObraCreate, ObraUpdate, ObraOut
+from app.auth import get_current_user
 
 router = APIRouter(prefix="/obras", tags=["Obras"])
+
+UPLOADS_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "static", "uploads"
+)
+os.makedirs(UPLOADS_DIR, exist_ok=True)
+
+EXTENSIONES_PERMITIDAS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+
+@router.post("/upload")
+def subir_archivo(
+    archivo: UploadFile = File(...),
+    current_user: str = Depends(get_current_user)
+):
+    nombre_original = archivo.filename or ""
+    extension = os.path.splitext(nombre_original)[1].lower()
+
+    if extension not in EXTENSIONES_PERMITIDAS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Extensión no permitida. Usa: {', '.join(sorted(EXTENSIONES_PERMITIDAS))}"
+        )
+
+    nombre_archivo = f"{uuid.uuid4().hex}{extension}"
+    ruta_destino = os.path.join(UPLOADS_DIR, nombre_archivo)
+
+    with open(ruta_destino, "wb") as buffer:
+        buffer.write(archivo.file.read())
+
+    return {"url": f"/static/uploads/{nombre_archivo}"}
 
 @router.get("/", response_model=list[ObraOut])
 def listar_obras(
@@ -65,7 +98,7 @@ def obtener_obra(id: int, db: Session = Depends(get_db)):
     return obra
 
 @router.post("/", response_model=ObraOut)
-def crear_obra(obra: ObraCreate, db: Session = Depends(get_db)):
+def crear_obra(obra: ObraCreate, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
     nueva = Obra(**obra.model_dump())
     db.add(nueva)
     db.commit()
@@ -73,7 +106,7 @@ def crear_obra(obra: ObraCreate, db: Session = Depends(get_db)):
     return nueva
 
 @router.put("/{id}", response_model=ObraOut)
-def editar_obra(id: int, datos: ObraUpdate, db: Session = Depends(get_db)):
+def editar_obra(id: int, datos: ObraUpdate, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
     obra = db.query(Obra).filter(Obra.id == id).first()
     if not obra:
         raise HTTPException(status_code=404, detail="Obra no encontrada")
@@ -84,7 +117,7 @@ def editar_obra(id: int, datos: ObraUpdate, db: Session = Depends(get_db)):
     return obra
 
 @router.delete("/{id}")
-def eliminar_obra(id: int, db: Session = Depends(get_db)):
+def eliminar_obra(id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
     obra = db.query(Obra).filter(Obra.id == id).first()
     if not obra:
         raise HTTPException(status_code=404, detail="Obra no encontrada")

@@ -28,106 +28,135 @@ export default function Catalogo() {
   }
 
   const limpiarFecha = (fecha) => {
-  if (!fecha) return '—'
-  if (fecha.includes('00:00:00')) {
-      return fecha.split(' ')[0]
+    if (!fecha) return '—'
+    if (fecha.includes('00:00:00')) return fecha.split(' ')[0]
+    return fecha
   }
-  return fecha
+
+  const limpiarFiltros = () => {
+    setBusqueda('')
+    setFiltroEliminada('')
+    setFiltroCompleta('')
+    setFiltroInstrumental('')
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white px-6 py-10 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-ink text-paper grain-bg">
+      <div className="max-w-7xl mx-auto px-6 py-10">
 
-      <h1 className="text-3xl font-bold mb-2">Catálogo de obras</h1>
-      <p className="text-gray-400 mb-8">Toda la discografía de Solitario en un solo lugar.</p>
-
-      {/* Filtros */}
-      <div className="flex flex-wrap gap-3 mb-8">
-        <input
-          type="text"
-          placeholder="Buscar por nombre, feat, beat..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 w-72"
-        />
-        <Select value={filtroEliminada} onChange={setFiltroEliminada} label="Estado">
-          <option value="">Todas</option>
-          <option value="true">Eliminadas</option>
-          <option value="false">Disponibles</option>
-        </Select>
-        <Select value={filtroCompleta} onChange={setFiltroCompleta} label="Completa">
-          <option value="">Todas</option>
-          <option value="true">Completas</option>
-          <option value="false">Incompletas</option>
-        </Select>
-        <Select value={filtroInstrumental} onChange={setFiltroInstrumental} label="Instrumental">
-          <option value="">Todas</option>
-          <option value="true">Con instrumental</option>
-          <option value="false">Sin instrumental</option>
-        </Select>
-        <button
-          onClick={() => {
-            setBusqueda('')
-            setFiltroEliminada('')
-            setFiltroCompleta('')
-            setFiltroInstrumental('')
-          }}
-          className="text-sm text-gray-400 hover:text-white border border-gray-700 rounded-lg px-4 py-2 transition-colors"
-        >
-          Limpiar filtros
-        </button>
-      </div>
-
-      {/* Contador */}
-      <p className="text-gray-500 text-sm mb-4">{obras.length} obras encontradas</p>
-
-      {/* Tabla */}
-      {loading ? (
-        <p className="text-gray-500">Cargando...</p>
-      ) : (
-        <div className="overflow-x-auto rounded-xl border border-gray-800">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-900 text-gray-400 uppercase text-xs">
-              <tr>
-                <th className="px-4 py-3 text-left">Nombre</th>
-                <th className="px-4 py-3 text-left">Feat</th>
-                <th className="px-4 py-3 text-left">Canal</th>
-                <th className="px-4 py-3 text-left">Fecha</th>
-                <th className="px-4 py-3 text-center">Completa</th>
-                <th className="px-4 py-3 text-center">Eliminada</th>
-                <th className="px-4 py-3 text-center">Instrumental</th>
-                <th className="px-4 py-3 text-center">Ver</th>
-              </tr>
-            </thead>
-            <tbody>
-              {obras.map((obra, i) => (
-                <tr
-                  key={obra.id}
-                  className={`border-t border-gray-800 hover:bg-gray-900 transition-colors ${
-                    obra.eliminada ? 'opacity-60' : ''
-                  }`}
-                >
-                  <td className="px-4 py-3 font-medium text-white">{obra.nombre}</td>
-                  <td className="px-4 py-3 text-gray-400">{obra.feat && obra.feat !== '-' ? obra.feat : '—'}</td>
-                  <td className="px-4 py-3 text-gray-400">{obra.canal || '—'}</td>
-                  <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{limpiarFecha(obra.fecha_obra)}</td>
-                  <td className="px-4 py-3 text-center">{obra.completa ? '✅' : '❌'}</td>
-                  <td className="px-4 py-3 text-center">{obra.eliminada ? '🗑️' : '—'}</td>
-                  <td className="px-4 py-3 text-center">{obra.tiene_instrumental ? '🎵' : '—'}</td>
-                  <td className="px-4 py-3 text-center">
-                    <Link
-                      to={`/obras/${obra.id}`}
-                      className="text-purple-400 hover:text-purple-300 font-medium"
-                    >
-                      Ver →
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* Header */}
+        <div className="mb-10 border-b border-line pb-8">
+          <p className="font-mono text-[11px] uppercase tracking-widest text-side-artist mb-2">
+            Discografía completa
+          </p>
+          <h1 className="font-display font-bold text-4xl text-paper">Catálogo de obras</h1>
+          <p className="text-gray-500 text-sm mt-2">Toda la discografía de Solitario en un solo lugar.</p>
         </div>
-      )}
+
+        {/* Filtros */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          <input
+            type="text"
+            placeholder="Buscar por nombre, feat, beat..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="bg-surface border border-line rounded-lg px-4 py-2 text-sm text-paper placeholder-gray-600 focus:outline-none focus:border-side-artist transition-colors w-72 font-body"
+          />
+          <Select value={filtroEliminada} onChange={setFiltroEliminada}>
+            <option value="">Todas</option>
+            <option value="false">Disponibles</option>
+            <option value="true">Eliminadas</option>
+          </Select>
+          <Select value={filtroCompleta} onChange={setFiltroCompleta}>
+            <option value="">Completa: todas</option>
+            <option value="true">Completas</option>
+            <option value="false">Incompletas</option>
+          </Select>
+          <Select value={filtroInstrumental} onChange={setFiltroInstrumental}>
+            <option value="">Instrumental: todas</option>
+            <option value="true">Con instrumental</option>
+            <option value="false">Sin instrumental</option>
+          </Select>
+          <button
+            onClick={limpiarFiltros}
+            className="font-mono text-[11px] uppercase tracking-widest text-gray-500 hover:text-paper border border-line rounded-lg px-4 py-2 transition-colors"
+          >
+            Limpiar
+          </button>
+        </div>
+
+        {/* Contador */}
+        <p className="font-mono text-[11px] uppercase tracking-widest text-gray-600 mb-4">
+          {obras.length} obras encontradas
+        </p>
+
+        {/* Tabla */}
+        {loading ? (
+          <div className="flex items-center gap-3 text-side-artist font-mono text-sm tracking-widest uppercase py-10">
+            <span className="w-2 h-2 rounded-full bg-side-artist animate-pulse" />
+            Cargando obras...
+          </div>
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-line">
+            <table className="w-full text-sm">
+              <thead className="bg-surface text-gray-500 font-mono text-[10px] uppercase tracking-widest">
+                <tr>
+                  <th className="px-4 py-3 text-left">Nombre</th>
+                  <th className="px-4 py-3 text-left">Feat</th>
+                  <th className="px-4 py-3 text-left">Canal</th>
+                  <th className="px-4 py-3 text-left">Fecha</th>
+                  <th className="px-4 py-3 text-center">Completa</th>
+                  <th className="px-4 py-3 text-center">Eliminada</th>
+                  <th className="px-4 py-3 text-center">Instrumental</th>
+                  <th className="px-4 py-3 text-center">Ver</th>
+                </tr>
+              </thead>
+              <tbody>
+                {obras.map((obra) => (
+                  <tr
+                    key={obra.id}
+                    className={`border-t border-line hover:bg-surface transition-colors ${
+                      obra.eliminada ? 'opacity-50' : ''
+                    }`}
+                  >
+                    <td className="px-4 py-3 font-medium text-paper">{obra.nombre}</td>
+                    <td className="px-4 py-3 text-gray-500 font-mono text-xs">
+                      {obra.feat && obra.feat !== '-' ? obra.feat : '—'}
+                    </td>
+                    <td className="px-4 py-3 text-gray-500 font-mono text-xs">{obra.canal || '—'}</td>
+                    <td className="px-4 py-3 text-gray-600 font-mono text-xs whitespace-nowrap">
+                      {limpiarFecha(obra.fecha_obra)}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {obra.completa
+                        ? <span className="text-green-500 font-mono text-xs">✓</span>
+                        : <span className="text-gray-700 font-mono text-xs">—</span>}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {obra.eliminada
+                        ? <span className="text-side-artist font-mono text-xs">✓</span>
+                        : <span className="text-gray-700 font-mono text-xs">—</span>}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {obra.tiene_instrumental
+                        ? <span className="text-side-prod font-mono text-xs">✓</span>
+                        : <span className="text-gray-700 font-mono text-xs">—</span>}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <Link
+                        to={`/obras/${obra.id}`}
+                        className="font-mono text-[10px] uppercase tracking-widest text-side-artist hover:text-paper transition-colors"
+                      >
+                        Ver →
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -137,7 +166,7 @@ function Select({ value, onChange, children }) {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-purple-500"
+      className="bg-surface border border-line rounded-lg px-4 py-2 text-sm text-paper font-mono focus:outline-none focus:border-side-artist transition-colors"
     >
       {children}
     </select>

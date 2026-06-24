@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.database import engine, Base
-from app.routes import obras
-from app.routes import auth
+from app.routes import obras, auth, artistas, beatmakers
 import app.models.usuario
+import app.models.artista
+import app.models.beatmaker
 
 Base.metadata.create_all(bind=engine)
 
@@ -21,8 +23,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 app.include_router(obras.router)
 app.include_router(auth.router)
+app.include_router(artistas.router)
+app.include_router(beatmakers.router)
 
 @app.get("/")
 def root():

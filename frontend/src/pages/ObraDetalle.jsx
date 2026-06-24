@@ -212,27 +212,32 @@ export default function ObraDetalle() {
           <div className="bg-surface border border-line rounded-2xl px-6 sm:px-10 py-8 sm:py-10">
             {lineasLetra.length > 0 ? (
               <div className="max-w-2xl mx-auto">
-                {lineasLetra.map((linea, i) => {
-                  const vacia = linea.trim() === ''
-                  return (
-                    <p
-                      key={i}
-                      data-line-index={i}
-                      className={
-                        vacia
-                          ? 'h-4'
-                          : 'group flex items-baseline gap-4 font-body text-paper/90 text-base sm:text-lg leading-[1.85] hover:text-side-artist transition-colors cursor-default'
-                      }
-                    >
-                      {!vacia && (
-                        <span className="font-mono text-[10px] text-gray-600 group-hover:text-side-artist transition-colors w-7 shrink-0 text-right tabular-nums">
-                          {String(i + 1).padStart(2, '0')}
-                        </span>
-                      )}
-                      <span>{linea}</span>
-                    </p>
-                  )
-                })}
+                {(() => {
+                  let contador = 0
+                  return lineasLetra.map((linea, i) => {
+                    const vacia = linea.trim() === ''
+                    if (!vacia) contador++
+                    const num = contador
+                    return (
+                      <p
+                        key={i}
+                        data-line-index={i}
+                        className={
+                          vacia
+                            ? 'h-4'
+                            : 'group flex items-baseline gap-4 font-body text-paper/90 text-base sm:text-lg leading-[1.85] hover:text-side-artist transition-colors cursor-default'
+                        }
+                      >
+                        {!vacia && (
+                          <span className="font-mono text-[10px] text-gray-600 group-hover:text-side-artist transition-colors w-7 shrink-0 text-right tabular-nums">
+                            {String(num).padStart(2, '0')}
+                          </span>
+                        )}
+                        <span>{linea}</span>
+                      </p>
+                    )
+                  })
+                })()}
               </div>
             ) : (
               <p className="text-center text-gray-500 font-mono text-sm uppercase tracking-widest py-6">
@@ -286,22 +291,23 @@ function ColumnaLado({ tone, eyebrow, tituloPrincipal, tituloLink, filas }) {
       <p className={`font-mono text-[11px] uppercase tracking-widest mb-2 ${accent}`}>
         {eyebrow}
       </p>
+      <div className="min-h-16 flex items-start">
+        {tituloLink ? (
+          <a
+            href={tituloLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`font-display font-bold text-2xl sm:text-3xl mb-5 text-paper ${hoverText} transition-colors inline-flex items-baseline gap-2 w-fit`}
+          >
+            {tituloPrincipal}
+          </a>
+        ) : (
+          <h3 className="font-display font-bold text-2xl sm:text-3xl mb-5 text-paper">
+            {tituloPrincipal}
+          </h3>
+        )}
+      </div>
 
-      {tituloLink ? (
-        <a
-          href={tituloLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`font-display font-bold text-2xl sm:text-3xl mb-5 text-paper ${hoverText} transition-colors inline-flex items-baseline gap-2 w-fit`}
-        >
-          {tituloPrincipal}
-          <span className="text-sm opacity-50">↗</span>
-        </a>
-      ) : (
-        <h3 className="font-display font-bold text-2xl sm:text-3xl mb-5 text-paper">
-          {tituloPrincipal}
-        </h3>
-      )}
 
       <dl className={`flex flex-col gap-3 border-l-2 ${accentBorder} pl-4`}>
         {filas.map((fila, i) => (

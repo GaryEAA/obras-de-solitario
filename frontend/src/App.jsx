@@ -5,6 +5,8 @@ import Home from './pages/Home'
 import Catalogo from './pages/Catalogo'
 import ObraDetalle from './pages/ObraDetalle'
 import Recuperacion from './pages/Recuperacion'
+import Login from './pages/Login'
+import Admin from './pages/Admin'
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
             <Route path="/catalogo" element={<Catalogo />} />
             <Route path="/obras/:id" element={<ObraDetalle />} />
             <Route path="/recuperacion" element={<Recuperacion />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/admin" element={<Admin />} />
           </Routes>
         </main>
         <Footer />
