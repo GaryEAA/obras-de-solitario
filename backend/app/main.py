@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.database import engine, Base
 from app.routes import obras, auth, artistas, beatmakers
+import os
 import app.models.usuario
 import app.models.artista
 import app.models.beatmaker

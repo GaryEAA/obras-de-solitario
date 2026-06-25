@@ -550,7 +550,7 @@ export default function Admin() {
 
       {/* ===== MODAL NUEVO ARTISTA / BEATMAKER ===== */}
       {modalNuevo && (
-        <div className="fixed inset-0 bg-black/90 z-[60] flex items-center justify-center px-4">
+        <div className="fixed inset-0 bg-black/90 z-60 flex items-center justify-center px-4">
           <div className="bg-surface border border-line rounded-2xl w-full max-w-sm p-8">
             <h3 className="font-display font-bold text-xl mb-6">
               Nuevo {modalNuevo === 'artista' ? 'artista' : 'beatmaker'}
