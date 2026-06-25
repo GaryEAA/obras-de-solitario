@@ -1,8 +1,9 @@
 import axios from 'axios'
+import { API_URL } from './config';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
-})
+  baseURL: API_URL,
+});
 
 export const login = async (username, password) => {
   const form = new URLSearchParams()

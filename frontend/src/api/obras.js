@@ -1,8 +1,9 @@
 import axios from 'axios'
+import { API_URL } from './config';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
-})
+  baseURL: API_URL,
+});
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
@@ -29,7 +30,7 @@ export const subirImagen = async (archivo) => {
   const formData = new FormData()
   formData.append('archivo', archivo)
   const token = localStorage.getItem('token')
-  const res = await fetch('http://localhost:8000/obras/upload', {
+  const res = await fetch(`${API_URL}/obras/upload`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
