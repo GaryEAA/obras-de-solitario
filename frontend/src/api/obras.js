@@ -11,6 +11,8 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+export const getCatalogo = (params) => api.get('/obras/catalogo', { params })
+
 export const getObras = (params) => api.get('/obras/', { params })
 export const getObra = (id) => api.get(`/obras/${id}`)
 export const getStats = () => api.get('/obras/stats')
