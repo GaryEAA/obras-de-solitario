@@ -23,10 +23,12 @@ export const eliminarObra = (id) => api.delete(`/obras/${id}`)
 export const getArtistas = () => api.get('/artistas/')
 export const crearArtista = (data) => api.post('/artistas/', data)
 export const editarArtista = (id, data) => api.put(`/artistas/${id}`, data)
+export const eliminarArtista = (id) => api.delete(`/artistas/${id}`)
 
 export const getBeatmakers = () => api.get('/beatmakers/')
 export const crearBeatmaker = (data) => api.post('/beatmakers/', data)
 export const editarBeatmaker = (id, data) => api.put(`/beatmakers/${id}`, data)
+export const eliminarBeatmaker = (id) => api.delete(`/beatmakers/${id}`)
 
 export const subirImagen = async (archivo) => {
   const formData = new FormData()
