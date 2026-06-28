@@ -49,9 +49,18 @@ def editar_artista(id: int, datos: ArtistaCreate, db: Session = Depends(get_db),
 
 @router.delete("/{id}")
 def eliminar_artista(id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    from app.models.obra import Obra
     artista = db.query(Artista).filter(Artista.id == id).first()
     if not artista:
         raise HTTPException(status_code=404, detail="Artista no encontrado")
+    # Desasignar obras antes de eliminar
+    db.query(Obra).filter(Obra.artista_id == id).update({"artista_id": None})
     db.delete(artista)
     db.commit()
     return {"mensaje": "Artista eliminado"}
+
+@router.get("/{id}/obras")
+def obras_del_artista(id: int, db: Session = Depends(get_db)):
+    from app.models.obra import Obra
+    obras = db.query(Obra.id, Obra.nombre).filter(Obra.artista_id == id).all()
+    return [{"id": o.id, "nombre": o.nombre} for o in obras]

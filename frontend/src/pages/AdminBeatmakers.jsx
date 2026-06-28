@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getBeatmakers, crearBeatmaker, editarBeatmaker } from '../api/obras'
+import { getBeatmakers, crearBeatmaker, editarBeatmaker, eliminarBeatmaker, getObrasDeBeatmaker} from '../api/obras'
 
 export default function AdminBeatmakers() {
   const [beatmakers, setBeatmakers] = useState([])
@@ -9,6 +9,8 @@ export default function AdminBeatmakers() {
   const [editando, setEditando] = useState(null)
   const [guardando, setGuardando] = useState(false)
   const [mensaje, setMensaje] = useState(null)
+  const [confirmarEliminar, setConfirmarEliminar] = useState(null)
+  const [busqueda, setBusqueda] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -35,21 +37,13 @@ export default function AdminBeatmakers() {
     setMensaje(null)
   }
 
-  const cerrar = () => {
-    setModal(null)
-    setEditando(null)
-    setMensaje(null)
-  }
+  const cerrar = () => { setModal(null); setEditando(null); setMensaje(null) }
 
   const guardar = async () => {
     setGuardando(true)
     try {
-      if (modal === 'crear') {
-        await crearBeatmaker(editando)
-      } else {
-        await editarBeatmaker(editando.id, editando)
-      }
-      setMensaje({ tipo: 'ok', texto: modal === 'crear' ? 'Beatmaker creado.' : 'Beatmaker guardado.' })
+      if (modal === 'crear') await crearBeatmaker(editando)
+      else await editarBeatmaker(editando.id, editando)
       cerrar()
       cargar()
     } catch {
@@ -59,79 +53,95 @@ export default function AdminBeatmakers() {
     }
   }
 
+  const [obrasAfectadas, setObrasAfectadas] = useState([])
+
+  const abrirConfirmarEliminar = async (bm) => {
+    const res = await getObrasDeBeatmaker(bm.id)
+    setObrasAfectadas(res.data)
+    setConfirmarEliminar(bm)
+  }
+
+  const handleEliminar = async () => {
+    try {
+      await eliminarBeatmaker(confirmarEliminar.id)
+      setConfirmarEliminar(null)
+      setObrasAfectadas([])
+      cargar()
+    } catch {
+      alert('Error al eliminar')
+      setConfirmarEliminar(null)
+    }
+  }
+
+  const filtrados = beatmakers.filter((bm) =>
+    bm.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  )
+
   return (
     <div className="min-h-screen bg-ink text-paper grain-bg">
-      <div className="max-w-4xl mx-auto px-6 py-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
 
-        <div className="mb-10 border-b border-line pb-8 flex items-end justify-between">
+        {/* Header */}
+        <div className="mb-8 border-b border-line pb-8 flex items-end justify-between">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-widest text-side-prod mb-2">Admin</p>
             <h1 className="font-display font-bold text-4xl text-paper">Beatmakers</h1>
+            <p className="text-gray-500 text-sm mt-1">{beatmakers.length} beatmakers registrados</p>
           </div>
-          <button
-            onClick={abrirCrear}
-            className="bg-side-prod hover:bg-side-prod/80 text-paper font-mono text-[11px] uppercase tracking-widest px-6 py-2.5 rounded-lg transition-colors"
-          >
+          <button onClick={abrirCrear}
+            className="bg-side-prod hover:bg-side-prod/80 text-paper font-mono text-[11px] uppercase tracking-widest px-6 py-2.5 rounded-lg transition-colors">
             + Nuevo
           </button>
         </div>
 
-        {mensaje && (
-          <div className={`mb-6 px-5 py-3 rounded-xl border font-mono text-[11px] uppercase tracking-widest ${
-            mensaje.tipo === 'ok' ? 'border-green-800 text-green-400' : 'border-side-artist/40 text-side-artist'
-          }`}>
-            {mensaje.texto}
-          </div>
-        )}
+        {/* Búsqueda */}
+        <div className="mb-6">
+          <input type="text" placeholder="Buscar beatmaker..."
+            value={busqueda} onChange={(e) => setBusqueda(e.target.value)}
+            className="bg-surface border border-line rounded-lg px-4 py-2 text-sm text-paper placeholder-gray-600 focus:outline-none focus:border-side-prod transition-colors w-72 font-body"
+          />
+        </div>
 
+        {/* Grid */}
         {loading ? (
-          <div className="flex items-center gap-3 text-side-prod font-mono text-sm tracking-widest uppercase py-10">
+          <div className="flex items-center gap-3 text-side-prod font-mono text-sm tracking-widest uppercase py-20 justify-center">
             <span className="w-2 h-2 rounded-full bg-side-prod animate-pulse" />
             Cargando...
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-line">
-            <table className="w-full text-sm">
-              <thead className="bg-surface text-gray-500 font-mono text-[10px] uppercase tracking-widest">
-                <tr>
-                  <th className="px-4 py-3 text-left">Nombre</th>
-                  <th className="px-4 py-3 text-left">Canal YT</th>
-                  <th className="px-4 py-3 text-left">Otros canales</th>
-                  <th className="px-4 py-3 text-center">Editar</th>
-                </tr>
-              </thead>
-              <tbody>
-                {beatmakers.map((bm) => (
-                  <tr key={bm.id} className="border-t border-line hover:bg-surface transition-colors">
-                    <td className="px-4 py-3 font-medium text-paper">{bm.nombre}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500 truncate max-w-xs">
-                      {bm.canal_yt ? (
-                        <a href={bm.canal_yt} target="_blank" rel="noopener noreferrer"
-                          className="text-side-prod hover:text-paper transition-colors">
-                          {bm.canal_yt}
-                        </a>
-                      ) : '—'}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500 truncate max-w-xs">
-                      {bm.otros_canales || '—'}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => abrirEditar(bm)}
-                        className="font-mono text-[10px] uppercase tracking-widest text-side-prod hover:text-paper transition-colors"
-                      >
-                        Editar →
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filtrados.map((bm) => (
+              <div key={bm.id} className="bg-surface border border-line rounded-2xl p-5 flex flex-col gap-3 hover:border-side-prod/40 transition-colors">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-side-prod mb-1">Beatmaker</p>
+                  <h3 className="font-display font-bold text-lg text-paper leading-tight">{bm.nombre}</h3>
+                </div>
+                {bm.canal_yt && (
+                  <a href={bm.canal_yt} target="_blank" rel="noopener noreferrer"
+                    className="font-mono text-[10px] uppercase tracking-widest text-side-prod hover:text-paper transition-colors truncate">
+                    Canal YT →
+                  </a>
+                )}
+                {bm.otros_canales && (
+                  <p className="font-mono text-[10px] text-gray-600 truncate">{bm.otros_canales}</p>
+                )}
+                <div className="flex gap-2 mt-auto pt-3 border-t border-line">
+                  <button onClick={() => abrirEditar(bm)}
+                    className="flex-1 font-mono text-[10px] uppercase tracking-widest text-gray-500 hover:text-paper border border-line py-1.5 rounded-lg transition-colors">
+                    ✏️ Editar
+                  </button>
+                  <button onClick={() => abrirConfirmarEliminar(bm)}
+                    className="flex-1 font-mono text-[10px] uppercase tracking-widest text-side-artist hover:bg-side-artist/10 border border-side-artist/30 py-1.5 rounded-lg transition-colors">
+                    🗑️ Eliminar
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
 
-      {/* Modal */}
+      {/* Modal editar/crear */}
       {modal && editando && (
         <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center px-4">
           <div className="bg-surface border border-line rounded-2xl w-full max-w-md p-8">
@@ -143,32 +153,19 @@ export default function AdminBeatmakers() {
                 Cerrar
               </button>
             </div>
-
             <div className="space-y-4">
-              <Campo label="Nombre *" value={editando.nombre} onChange={(v) => setEditando((p) => ({ ...p, nombre: v }))} />
-              <Campo label="Canal YouTube" value={editando.canal_yt} onChange={(v) => setEditando((p) => ({ ...p, canal_yt: v }))} />
+              <Campo label="Nombre *" value={editando.nombre} onChange={(v) => setEditando((p) => ({ ...p, nombre: v }))} tone="prod" />
+              <Campo label="Canal YouTube" value={editando.canal_yt} onChange={(v) => setEditando((p) => ({ ...p, canal_yt: v }))} tone="prod" />
               <div>
-                <label className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-1.5 block">
-                  Otros canales
-                </label>
-                <textarea
-                  value={editando.otros_canales || ''}
-                  onChange={(e) => setEditando((p) => ({ ...p, otros_canales: e.target.value }))}
-                  rows={3}
-                  placeholder="Un link por línea..."
-                  className="w-full bg-surface-raised border border-line rounded-lg px-4 py-2.5 text-paper text-sm focus:outline-none focus:border-side-prod transition-colors resize-none font-body"
-                />
+                <label className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-1.5 block">Otros canales</label>
+                <textarea value={editando.otros_canales || ''} onChange={(e) => setEditando((p) => ({ ...p, otros_canales: e.target.value }))}
+                  rows={3} placeholder="Un link por línea..."
+                  className="w-full bg-surface-raised border border-line rounded-lg px-4 py-2.5 text-paper text-sm focus:outline-none focus:border-side-prod transition-colors resize-none font-body" />
               </div>
             </div>
-
             {mensaje && (
-              <p className={`font-mono text-[11px] uppercase tracking-widest mt-4 ${
-                mensaje.tipo === 'ok' ? 'text-green-400' : 'text-side-artist'
-              }`}>
-                {mensaje.texto}
-              </p>
+              <p className="font-mono text-[11px] uppercase tracking-widest mt-4 text-side-artist">{mensaje.texto}</p>
             )}
-
             <div className="flex gap-3 mt-6">
               <button onClick={cerrar}
                 className="flex-1 font-mono text-[11px] uppercase tracking-widest text-gray-500 border border-line py-2 rounded-lg hover:text-paper transition-colors">
@@ -182,20 +179,51 @@ export default function AdminBeatmakers() {
           </div>
         </div>
       )}
+
+      {/* Modal confirmar eliminar */}
+      {confirmarEliminar && (
+        <div className="fixed inset-0 bg-black/90 z-60 flex items-center justify-center px-4">
+          <div className="bg-surface border border-side-artist/30 rounded-2xl w-full max-w-sm p-8 text-center">
+            <p className="font-mono text-[11px] uppercase tracking-widest text-side-artist mb-3">Confirmar eliminación</p>
+            <h3 className="font-display font-bold text-xl mb-3">{confirmarEliminar.nombre}</h3>
+            {obrasAfectadas.length > 0 ? (
+              <div className="text-left mb-4">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-2">
+                  {obrasAfectadas.length} obra(s) quedarán sin beatmaker:
+                </p>
+                <div className="bg-surface-raised rounded-lg p-3 max-h-32 overflow-y-auto space-y-1">
+                  {obrasAfectadas.map((o) => (
+                    <p key={o.id} className="font-mono text-[10px] text-gray-400 truncate">· {o.nombre}</p>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="text-gray-500 text-sm mb-4">No tiene obras asignadas.</p>
+            )}
+            <p className="text-gray-600 text-xs mb-6 font-mono">Esta acción no se puede deshacer.</p>
+            <div className="flex gap-3">
+              <button onClick={() => { setConfirmarEliminar(null); setObrasAfectadas([]) }}
+                className="flex-1 font-mono text-[11px] uppercase tracking-widest text-gray-500 border border-line py-2 rounded-lg hover:text-paper transition-colors">
+                Cancelar
+              </button>
+              <button onClick={handleEliminar}
+                className="flex-1 bg-side-artist hover:bg-side-artist/80 text-paper font-mono text-[11px] uppercase tracking-widest py-2 rounded-lg transition-colors">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
-function Campo({ label, value, onChange }) {
+function Campo({ label, value, onChange, tone = 'artist' }) {
   return (
     <div>
       <label className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-1.5 block">{label}</label>
-      <input
-        type="text"
-        value={value || ''}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-surface-raised border border-line rounded-lg px-4 py-2 text-paper text-sm focus:outline-none focus:border-side-prod transition-colors font-body"
-      />
+      <input type="text" value={value || ''} onChange={(e) => onChange(e.target.value)}
+        className={`w-full bg-surface-raised border border-line rounded-lg px-4 py-2 text-paper text-sm focus:outline-none transition-colors font-body ${tone === 'prod' ? 'focus:border-side-prod' : 'focus:border-side-artist'}`} />
     </div>
   )
 }

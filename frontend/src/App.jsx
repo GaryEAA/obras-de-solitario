@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -13,6 +15,7 @@ import AdminBeatmakers from './pages/AdminBeatmakers'
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <div className="flex flex-col min-h-screen">
         <Navbar />
         <main className="flex-1">
@@ -31,6 +34,14 @@ function App() {
       </div>
     </BrowserRouter>
   )
+}
+
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
 }
 
 export default App
