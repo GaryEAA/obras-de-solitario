@@ -49,9 +49,17 @@ def editar_beatmaker(id: int, datos: BeatmakerCreate, db: Session = Depends(get_
 
 @router.delete("/{id}")
 def eliminar_beatmaker(id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    from app.models.obra import Obra
     beatmaker = db.query(Beatmaker).filter(Beatmaker.id == id).first()
     if not beatmaker:
         raise HTTPException(status_code=404, detail="Beatmaker no encontrado")
+    db.query(Obra).filter(Obra.beatmaker_id == id).update({"beatmaker_id": None})
     db.delete(beatmaker)
     db.commit()
     return {"mensaje": "Beatmaker eliminado"}
+
+@router.get("/{id}/obras")
+def obras_del_beatmaker(id: int, db: Session = Depends(get_db)):
+    from app.models.obra import Obra
+    obras = db.query(Obra.id, Obra.nombre).filter(Obra.beatmaker_id == id).all()
+    return [{"id": o.id, "nombre": o.nombre} for o in obras]
